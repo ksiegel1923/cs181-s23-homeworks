@@ -1,7 +1,8 @@
 \documentclass{harvardml}
 
-% Authors: Amir Shanehsazzadeh, Andrew Kim, Nari Johnson (Jan 2021)
-% Edited by: Max Guo, Raphael Pellegrin, Katherine Tian (Jan 2022)
+ % \textbf{Authors:} Kara Siegel\\
+ % \textbf{Collaborators:} Noah Covey, Natalie Melas-Kyriazi\\
+ %Edited by: Max Guo, Raphael Pellegrin, Katherine Tian (Jan 2022)
 % Edited once more by: William Tong (Jan 2023), Skyler Wu (Jan 2023)
 
 % Adapted from CS281 Fall 2019 section 0 notes
@@ -61,7 +62,9 @@
 \newcommand{\dcp}[1]{\kibitz{blue}{[DCP: #1]}}
 
 \begin{document}
-
+\noindent \textbf{Name:} Kara Siegel\\
+\textbf{Collaborators:} Noah Covey, Natalie Melas-Kyriazi\\
+\\
 \noindent Welcome to CS181! The purpose of this assignment is to help assess your readiness for this course. \textbf{This assignment will be graded for completion and effort.} If you encounter any difficulty with these problems, fear not! We will have sections in the first week of class reviewing the math, statistics, and coding pre-requisites for this course. TFs will also directly discuss relevant problems from this HW0 in these sections. You are, of course, more than welcome to swing by office hours and post questions on Ed.
 
 \begin{enumerate}
@@ -95,7 +98,143 @@ In this class we will be exploring the question of ``how do we model the trend i
 \end{enumerate}
     
 \end{problem}
-
+\pagebreak
+\textbf{Solution:}\\
+\begin{enumerate}
+    \item
+    We start with a system of equations
+    \begin{align}
+        y_1 = w_0 + w_1x_1\\
+        y_2 = w_0 + w_1x_2\\
+    \end{align}
+    We can then subtract equation 2 from equation 1 in order to get:
+    \begin{align}
+        y_1 - y_2 = w_1(x_1-x_2)\\
+    \end{align}
+    Simplifying we can solve for $w_1$ and $w_0$
+    \begin{align}
+        \boxed{w_1 = \frac{y_1-y_2}{x_1-x_2}}\\
+        \\
+        y_1 = w_0 + x_1(\frac{y_1-y_2}{x_1-x_2})\\
+        \boxed{w_0 = y_1 - x_1(\frac{y_1-y_2}{x_1-x_2})}
+    \end{align}
+\\
+    \item
+    y = $\begin{bmatrix}
+        y_1\\
+        y_2
+    \end{bmatrix}$
+    &&
+    X = \begin{bmatrix}
+        1 & x_1\\
+        1 & x_2
+    \end{bmatrix}
+    &&
+    w = \begin{bmatrix}
+        w_0\\
+        w_1
+    \end{bmatrix}\\
+    
+    \begin{center}
+    \boxed{\begin{bmatrix}
+        y_1\\
+        y_2
+    \end{bmatrix} = \begin{bmatrix}
+        1 & x_1\\
+        1 & x_2
+    \end{bmatrix}\begin{bmatrix}
+        w_0\\
+        w_1
+    \end{bmatrix}}
+    \end{center}
+\\
+    \item
+    In order for there to be a unique solution for \textbf{w} we know that \textbf{X} must be invertible. This means it must be a square matrix. This ultimately means that our dataset must contain at least two unique points. If $x_1$ and $x_2$ were to be the same then it would not be invertible and there would not be a unique solution for $w$. \\
+    \\
+    $\begin{bmatrix}
+        1 & x_1\\
+        1 & x_2
+    \end{bmatrix}^{-1}$
+    $\begin{bmatrix}
+        y_1\\
+        y_2
+    \end{bmatrix}
+    = 
+    \begin{bmatrix}
+        1 & x_1\\
+        1 & x_2
+    \end{bmatrix}^{-1}
+    \begin{bmatrix}
+        1 & x_1\\
+        1 & x_2
+    \end{bmatrix}
+    \begin{bmatrix}
+        w_0\\
+        w_1
+    \end{bmatrix}$\\
+    \\
+    $\boxed{\begin{bmatrix}
+        1 & x_1\\
+        1 & x_2
+    \end{bmatrix}^{-1}$
+    $\begin{bmatrix}
+        y_1\\
+        y_2
+    \end{bmatrix}
+    = 
+    \begin{bmatrix}
+        w_0\\
+        w_1
+    \end{bmatrix}}$
+    \item
+\\
+    We can first solve for what our identity matrix is:\\
+    $\begin{bmatrix}
+        1 & x_1\\
+        1 & x_2
+    \end{bmatrix}^{-1} = \frac{1}{x_2-x_1}\begin{bmatrix}
+        x_2 & -x_1\\
+        -1 & 1
+    \end{bmatrix}$\\
+    \\
+    Using this result we can solve for the $\textbf{w}$ vector:
+    \begin{align}
+        \begin{bmatrix}
+            w_0\\
+            w_1
+        \end{bmatrix} = 
+       \frac{1}{x_2-x_1}\begin{bmatrix}
+           x_2 & -x_1\\
+           -1 & 1
+       \end{bmatrix} 
+       \begin{bmatrix}
+           y_1\\
+           y_2
+       \end{bmatrix} = \frac{1}{x_2-x_1}\begin{bmatrix}
+           x_2y_1-x_1y_2\\
+           -y_1+y_2
+       \end{bmatrix} 
+    \end{align}
+    This means that $w_0$ is:\\
+    \begin{align}
+        w_0 = \frac{x_2y_1-x_1y_2}{x_2-x_1}
+    \end{align}
+    From part a we have that $w_0$ is:\\
+    \begin{align}
+        w_0 = y_1 - x_1\frac{y_1-y_2}{x_1-x_2} = \frac{y_1(x_1-x_2) - x_1(y_1-y_2)}{x_1-x_2} = \frac{x_1y_2-x_2y_1}{x_1-x_2} = \frac{x_2y_1-x_1y_2}{x_2-x_1}
+    \end{align}
+    We can also solve for our new $w_1$:
+    \begin{align}
+        w_1 = \frac{y_2-y_1}{x_2-x_1} = \frac{y_1-y_2}{x_1-x_2}
+    \end{align}
+    This tells us that our answers from part 1 match our new results!\\
+    \\
+    One advantage of fitting the model in terms of matrix notation is that it makes our work cleaner, more organized, and easy to follow. Furthermore, it makes it easier to scale if we have more points and values.\\
+    \\
+    \item
+    Yes our analytical expression for $\textbf{w}$ that we derived in (3) applies to the case when $D$ consists of more than 2 points because a line can have an infinite number of points. This means we can take any two points from the line to use as $(x_1, y_1)$ and $(x_2, y_2)$ in order to solve for $w_0$ and $w_1$.
+\end{enumerate}
+\pagebreak
 \begin{problem}[Optimizing Objectives - Calculus Review]
 In this class, we will write real-life goals we want our model to achieve into a mathematical expression and then find the optimal settings of the model that achieves these goals. The formal framework we will employ is that of mathematical optimization. Although the mathematics of optimization can be quite complex and deep, we have all encountered basic optimization problems in our first calculus class!\\
 
@@ -122,6 +261,31 @@ $$y = f(x_1, x_2) = \exp\left(-(x_1 - 2)^2 - (x_2 - 1)^2 \right)$$
 \end{enumerate}
 
 \end{problem}
+\pagebreak
+\textbf{Solution:}\\
+\begin{enumerate}
+    \item First we can graph the function:\\
+    \includegraphics[scale=0.5]{graph21.png}\\
+    From this graph we can clearly see that the function is concave. There is a maximum height that the plant will reach and there is clearly a unique solution (a very specific watering schedule that would achieve a maximum height).\\
+    \item
+    First we want to take the derivative of our function:\\
+    $$\frac{d}{dx}[-3x^2 + 72x + 70] = -6x + 72$$\\
+    We then want to set this derivative equal to 0 and solve for $x$:\\
+    $$-6x + 7x = 0$$
+    $$x = 12$$\\
+    Using this value of $x$ we can find the maximum value of the height (the corresponding $y$ value for this value of $x$):
+    $$y = -3(12^2)+72(12)+70 = 502$$\\
+    Now we have the critical point $(12, 502)$ so we can use the second derivative test to figure out if this is a maximum or minimum point:\\
+    $$f'' = -6 < 0$$ Because our value is less than 0 we know that we have a maximum point.\\
+    Lastly, because this is a concave function we know that this is a global maximum.\\
+    \\
+    This means we have a global max when Nari waters her plant with $12$ ounces of water so that it reaches a height of 502.
+    \\
+    \item
+    Here is the visualization in 3D:\\
+    \includegraphics[scale=0.5]{hw0/graph23.png}\\
+    Similarly as to the parts above, the graph clearly shows us that this is a concave function, which means there is one global maximum. This means that there is a unique solution because we can clearly see that the is a specific value of water and corresponding value of sunlight that allows the plant to reach a maximum height.
+\end{enumerate}
 
 \begin{problem}[Reasoning about Randomness - Probability and Statistics Review]
 In this class, one of our main focuses is to model the unexpected variations in real-life phenomena using the formalism of random variables. In this problem, we will use random variables to model how much time it takes an USPS package processing system to process packages that arrive in a day.\\
@@ -152,4 +316,34 @@ For this problem, you may find the \texttt{multivariate\_normal} module from \te
     \end{enumerate}
 \end{enumerate}
 \end{problem}
+\textbf{Solution:}\\
+\begin{enumerate}
+    \item 
+    First we can generate our bivariate histogram of the $S$ and $W$ samples:\\
+    \includegraphics[scale=0.5]{hw0/graph31.png}\\
+    Now from this graph we can empirically estimate which combination of size and height will have the highest frequency. This is when $\textbf{S = 119.5}$ and $\textbf{W = 3}$. These values are very close to the expected size ($S = 120)$ and expected weight $(S=4)$.\\
+    \item
+    We can show the two graphs on the same image so that it is easier to compare:\\
+    \includegraphics[scale=0.5]{hw0/graph32.png}\\
+    From these two plots we can see that the random variables $S$ and $W$ are correlated. When $S$ is greater, our graph is shifted right along the x-axis (meaning that our value for $W$ is greater).
+    \item
+    One reason that the Gaussian distribution is appropriate model for the size and weight of packages is that there are a lot of examples of the normal distribution in the real world. Additionally, size and weight are correlated (we assume that a bigger weight implies a bigger size) which is compatible with the Normal distribution.\\
+    \\
+    One reason that Gaussian distribution is not appropriate is that we can't have a negative size and weight but the Normal distribution could be negative.\\
+    \item
+    We are given that $T = 60 + 0.6W + 0.2S + \epsilon$ so we can use this to solve for $\mathbb{E}(T)$ and $\mathrm{Var}(T)$\\
+    \\
+    Using linearity of expectation we can rewrite:
+    $$\mathbb{E}(T) = 60 + \mathbb{E}(0.6W) + \mathbb{E}(0.2S) + \mathbb{E}(\epsilon)$$
+    We know the expectation of $W$ and $S$ from our $\mu$ vector above and we know the expectation of $\epsilon$ is 0 from its distribution.
+    $$\mathbb{E}(T) = 60 + (0.6)(4) + (0.2)(120) + 0 = \boxed{86.4}$$\\
+    Now we can solve for the variance. First of all we know that $W$ and $S$ are dependent upon each other but they are both independent of epsilon. This means we only need to worry about the case of covariance for $W$ and $S$.
+    $$\mathrm{Var}(T) = \mathrm{Var}(60) + \mathrm{Var}(0.6W + 0.2S) + \mathrm{Var}(\epsilon) = \mathrm{Var}(60) + \mathrm{Var}(0.6W) + \mathrm{Var}(0.2S) + \mathrm{Cov}(0.6W, 0.2S) + \mathrm{Var}(\epsilon)$$
+    Now we know that the variance of a constant is 0. We also know that the variance of $\epsilon$ is 5 from its distribution. Furthermore, from the $\Sigma$ vector we know the variance of $S$ and $W$ are both 1. 
+    $$\mathrm{Var}(T) = 0 + (0.6)^2(1.5) + (0.2)^2(1.5) + 2(0.6)(0.2)(1) + 5 = \boxed{5.84}$$\\
+    \item
+    When looking into my code file you can see a function that simulates the draws from the distribution of $T*$. Then in a function below we can empirically estimate the mean and distribution to be:\\
+    $\boxed{\textnormal{Mean: } 6229.77299115337}$\\ 
+    \\ $\boxed{\textnormal{Standard Deviation: }731.1497394644124}$
+\end{enumerate}
 \end{document}
