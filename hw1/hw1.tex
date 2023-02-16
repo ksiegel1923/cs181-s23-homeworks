@@ -164,6 +164,38 @@ What is the time complexity of your implementation, when computing your model on
 
 \newpage
 
+\textbf{Problem 1 Solution:}\\
+\begin{enumerate}
+    \item 
+    Behavior of the fitted model for different values of $\tau$:\\
+    \includegraphics[scale=0.8
+    ]{hw1/KernelGraph.png}\\
+    From this graph we can clearly see that when $\tau=2500$ our model is underfitting our data and not accounting for any of the noise. It has a high bias with a low variance. On the other hand, when $\tau=1$ our model is overfitting the data because it is accounting for every one of our noisy points. It has a low bias and high variance. $\tau=50$ seems like the best option out of the three because it manages the bias/variance tradeoff the best: it is following our training data but is not too extreme where it hits every point and overfits.\\ 
+    \item\\
+    We do not want to evaluate the mean squared error for $f_{\tau}$  on the training set and give the value of $\tau$ that minimizes the loss because then we would be overfitting our data. In this example we would be only looking at the training set so we would fit the training set really well but that doesn't necessarily mean that it will fit our test data very well. If we were to use this strategy a value of $\tau=0$ would be the optimal solution but just like $\tau=1$ this would overfit our data (it would prioritize variance much more than bias). If $\tau$ becomes very small when $x=x'$ then $K_{\tau}$ would be equal to $e^0=1$ and when $x\neq x'$, our exponent of $e$ would get very big so $K_{\tau}$ would get closer and closer to 0.\\
+    \item\\
+    First we can start with the standard MSE equation:
+    \begin{equation*}
+       \texttt{MSE} = \frac{1}{N} \sum_{i=1}^N\left(y_i - \hat{y_i}\right)^2
+    \end{equation*}\\
+    We know that we are calculating our MSE on the $M$ test values. Our true values will be the true values in the test test ($y'_m$) and our predicted values will be based on inputting our $x'_m$ into our kernel equation (summing through our training data points). This means our specific MSE equation is:\\
+    \begin{equation*}
+       \texttt{MSE} = \frac{1}{M} \sum_{m=1}^M\left(y'_m - \cfrac{\sum_{n} K_\tau(x_n,x^{'}_m) y_n}{\sum_n K_\tau(x_n, x^{'}_m)} \right)^2
+    \end{equation*}\\
+    \item\\
+    I next computed the MSE on the training data set for different values of $\tau$:\\
+    tau = 1: loss = 1.9472621565209178\\
+    tau = 50: loss = 1.8582899169613452\\
+    tau = 2500: loss = 8.333886806980793\\
+    From this data we can clearly see that $\tau=50$ yields the lowest test set MSE. This is consistent with what I observed in Part 1, because I thought that $\tau=1$ was overfitting (so would not have a low MSE on the test data) and $\tau=2500$ was underfitting so it also would not have a good MSE on the test data.\\
+    \item\\
+    Aside from just the value of $\tau$ that I selected, I would send my friend what kernel function I used and the training data points I used to train my model. The space complexity of storing our model would be $O(N)$ because we would need to store the $N$ data points. When computing my model on a new datapoint, the time complexity is $O(N)$. Whenever we add a new datapoint we know that we need to implement our kernel function on my new data point against each of the other training points. This function is $O(1)$ and we are doing it $O(N)$ times so overall the time complexity is $O(N)$.
+
+\end{enumerate}
+
+\newpage
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -210,6 +242,29 @@ What is the time complexity of your implementation, when computing your model on
 \end{enumerate}
 
 \end{problem}
+\newpage
+\textbf{Problem 2 Solution:}\\
+\begin{enumerate}
+    \item  Behavior of the fitted model for different values of $k$:\\
+    \includegraphics[scale=0.8
+    ]{hw1/knnGraph.png}\\
+    (I added an additional test case to check my implementation and this is included in my code file).\\
+    \item\\
+    From this graph we can that when $k=1$ our graph seems to fit every point in the data. This behavior is very similar to the behavior of the graph of $\tau=1$ in part 1 because they both fit every point in the training data (they are both overfitting the data). The graph for $k=N-1$ is almost a flat line and it seems to match the behavior of $\tau=2500$ from part 1. Both of these models underfit our data. Lastly, $k=3$ looks like it is interpolating best as it is accounting for the variation from the noise is our data without fitting it exactly. It is the best at balancing the bias/variance tradeoff(not overfitting or underfitting too much). It's behavior is most similar to the model when $\tau=50$ in part 1. Overall, the behavior of the two models (part 1 and part 2) do behave similarly. Furthermore, we know that in part 1, as $\tau \rightarrow \infty$ the green line would continue to become flatter and look even more similar to the graph of $k=N-1$. \\
+    \item
+    When just looking at the graph my initial thought was that the $k=3$ model would be optimal because it seems to do the best with balancing the bias/variance tradeoff (not overfitting or underfitting the data). It is able to account for noise (which $k=N-1$ does not) but it does not fit every single training data point like the model of $k=1$.\\
+    \\
+    However, in my code I was able to actually calculate the mean squared error of each model on the test set. These are my results:\\
+    k = 1: loss = 1.7406000000000004\\
+    k = 3: loss = 3.8907662222222212\\
+    k = N -1: loss = 9.528571442602042 \\
+    \\
+    Interestingly, these results show that $k=1$ has the lowest value of loss (different from my original prediction). This model chooses a low bias in exchange for a higher variance. Perhaps in this case because of the data we are using, $k=1$ is the optimal choice. From the image of the true temperature trends provided to us we can see that the test data does seem to be very similar to the training data, so when we use $k=1$ we are not overfitting our model, but instead fitting it optimally for this test data. Additionally, because our data is covering millions of years and using averages, $k=3$ could be in fact underfitting. As a result, I would ultimately say that the model with $k=1$ is optimal.\\
+    \item
+    Aside from telling my friend the value of $k$ that I selected, I would also send them the training data points I used. Similarly as in problem 1, the space complexity of storing our model would be $O(N)$ because we need to store all of our training data points. Our time complexity of computing this model on a new data point would be longer than in question 1 because each step in our algorithm requires a little bit more work. For each data point, we need to calculate its distance from all of the other training data points. We then need to sort these distances so we know which $k$ are closest. Lastly, we sum our value of $y$ for each the $k$ points that are closest.The longest step of this process is actually sorting our data which I am doing in $O(N\cdot \log N)$ time (we know this takes the longest because calculating every distance would just be using our Kernel function $N$ times so this would take $O(N)$ time). This means the overall process would take $O(N\cdot \log N)$ time. \\
+    (As an aside, if I were able to implement a faster sorting method such as the median of medians approach then I could possibly make this sorting process faster so that the overall process would only take $O(N)$ time).\\
+    
+\end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 3
@@ -335,7 +390,38 @@ Contrast this with transformations (such as standardization) that cause the vari
 of the target $\mathbf{y}$ to be different; in these cases the
 MSE can no longer be directly compared.
 
-\end{framed}
+\end{framed}\\
+\newpage
+\textbf{Problem 3 Solution:}\\
+\begin{enumerate}
+    \item Below are my four plots graphing the OLS regression line trained on my training data against a scatter plot of the training data:\\
+    \includegraphics[scale=0.5]{hw1/linearRegressionGraph.png}\\
+    \item
+    \textbf{Part a:}\\
+    Train MSE: 4.83; Test MSE: 7.96 \\
+    Train Negative Log-Likelihood: 125.768; Test Negative Log-Likelihood: 63.256\\
+    When looking at the graph this model seems to underfit our data because most of our data points are not covered (it is not accounting well to the noise in our data). Furthermore, our train MSE isn't that low meaning the data is not overfitting or optimally fitting our data points, and the MSE for our test data set is even worse. Additionally, our test negative log-likelihoods are high, indicating this model might not be optimal (interestingly, the train negative log-likelihood is higher than the test negative log-likelihood but this can be explained because our training data set is so much larger than our test data set).\\
+    \\
+    \textbf{Part b:}\\
+    Train MSE: 5.53; Test MSE: 8.71 \\
+    Train Negative Log-Likelihood: 129.620; Test Negative Log-Likelihood: 64.035 \\
+    Again, when looking at the graph this model seems to underfit our data because most of our data points are not covered (it is not accounting well to the noise in our data). We see the same patterns as in part a with our train and test MSE's and our train and test negative log likelihoods (because they are both underfitting our data). \\
+    \\
+    \textbf{Part c:}\\
+    Train MSE: 2.88; Test MSE: 5.97 \\
+    Train Negative Log-Likelihood: 111.018; Test Negative Log-Likelihood: 62.098 \\
+    Looking at the graph, this model seems to fit our data well. This is supported by the fact that our train MSE is really low and our test MSE and test log-likelihoods are the lowest of all of the different functions. Furthermore, the train and test MSE's do not diverge too much which indicates that we are not overfitting our data. \\
+    \\
+    \textbf{Part d:}\\
+    Train MSE: 0.64; Test MSE: 58.90\\
+    Train Negative Log-Likelihood: 68.303; Test Negative Log-Likelihood: 1162.188\\
+    Looking at the graph, this model seems to overfit our data because it is hitting every single data point. This is backed up by our MSE values because our train MSE is very low (meaning we are really minimizing our error on the training data $\rightarrow$ overfitting) but our test MSE is really high meaning that this model does not fit our test data well. This model fits very specifically to the training data set.\\
+    \\
+    \item
+    In this model we no longer need to share our entire training set with my friend because this model doesn't rely on the training data set (it is a parametric model). Instead we would just need to send them our weight vector and our basis function (how to transform a 1xD vector to a DxD vector) which means that the space complexity of storing this model would no longer depend on $N$ but instead it would depend on $D$. We would need to store our weight vector that's of dimension $D$ so our overall space complexity would be $O(D)$. Our time complexity is also going to depend on $D$. Our make$_$basis function takes $O(D)$ time because we need to transform the vector so we loop through it $D$ times and then we would need to multiply the transpose of our weight vector by this new vector which will take $O(D)$ time as well so our overall time complexity is $O(D)$.\\
+    We can assume these complexities will be much smaller than those of the kNN and kernelized regressor because we would assume $N$ is much greater than $D$ (we would have significantly more data points than features of our data).\\ 
+
+\end{enumerate}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 4
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -366,17 +452,36 @@ This question is a conceptual question, and you are not required to implement th
 \end{enumerate}
 
 \end{problem}
+\newpage
+\textbf{Problem 4 Solution:}\\
+\\
+If I wanted to build a regression model that can be used to explain the driving factors of the annual US energy consumption I would choose to use US energy consumption as my target variable, and I would measure it in British Thermal Units. \\
+\\
+There are many possible features that we could use in this model, but I would focus on US population size, gas prices, average winter temperature, GDP per capita, and dollars spent on government subsidies for energy consumption in the previous year. Population size is an important metric because theoretically a larger population would consume more energy. As a result, if we were to see a spike in energy consumption, it would be important to know if it's because more people are consuming energy or another factor is impacting the change. Gas prices would also be helpful to look at because they could affect how much gas people use. If prices are higher, then people may try to limit their gas usage, driving down the total energy consumption. Additionally, average temperature in the winter is an important metric because colder temperatures would increase energy consumption for heating and other indoor activities. Furthermore, it would be interesting to look at how the US economy is doing (by examining GDP per capita) to understand how economic growth coincides with energy consumption. Lastly, it would be helpful to look at how the quantity of money the government spent on subsidized energy programs affects energy consumption to better see how the previous year's government policies were working. This could inform the President about whether they should continue the new program.\\
+\\
+I would choose my covered time period to be the last 50 years. I would like to cover enough years so that the model has a lot of data and we can better understand which features are affecting energy consumption the most. On the other hand, we don't want to go back too far in time because technology has changed so drastically and the world was so different (people had different priorities and it was much harder for different countries to communicate). If we go back too far, there could be many other factors affecting energy consumption and so our model may be more confusing. I believe 50 years is a good balance. This would mean my dataset would have a size of $50\cdot5 = 250$ because it would be the number of data points times the number of features.\\
+\\
+In order to assess the model's performance I would plan to use several tools. I would initially plan to try to minimize my MSE through cross validation and comparing different iterations of my model. Additionally, I would use bootstrapping in order to better understand the level of uncertainty in my model. \\
+\\
+The US president could use my model to possibly predict the US energy consumption for the next year. He could also use the model to determine if the previous year's subsidy programs were working. Using these results together, the president could decide to implement more energy consumption subsidies or taxation strategies.\\
+\\
+One barrier that could make it harder for the US president to trust my model is unpredictable events that happened in previous years that could impact the model. For example, COVID had a drastic effect on energy consumption, and it has had lasting effects so it could be risky to trust the model. Another barrier could be that the model is difficult to interpret and there are too many other factors that impact energy consumption. For example, foreign relations also play a big role in energy consumption as well as policy decisions about energy, so blindly trusting a model that is unable to adapt to those factors could be risky and lead to many other problems.\\
+\\
+If my model is wrong / inaccurate then it could possibly give a very inaccurate prediction of future energy consumption. This could drastically impact an expensive policy decision leading to more energy consumption. It could also affect the US relations with other countries creating other problems unrelated to energy consumption.
+
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Name and Calibration
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Name}
+\subsection*{Name} Kara Siegel
 
 \subsection*{Collaborators and Resources}
-Whom did you work with, and did you use any resources beyond cs181-textbook and your notes?
+\textbf{Whom did you work with, and did you use any resources beyond cs181-textbook and your notes?}\\
+Natalie Melas-Kyriazi, Noah Covey, Dominik Bohnet Zurcher
 
 \subsection*{Calibration}
-Approximately how long did this homework take you to complete (in hours)? 
+\textbf{Approximately how long did this homework take you to complete (in hours)? }\\
+I spent approximately 15 hours on this problem set.
 
 \end{document}
