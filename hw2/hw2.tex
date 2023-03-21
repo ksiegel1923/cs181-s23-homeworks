@@ -4,7 +4,6 @@
 \course{CS181-S23}
 \assignment{Assignment \#2}
 \duedate{11:59pm EST, Feb 23th, 2023}
-
 \usepackage[OT1]{fontenc}
 \usepackage[colorlinks,citecolor=blue,urlcolor=blue]{hyperref}
 \usepackage[pdftex]{graphicx}
@@ -118,6 +117,42 @@ Repeat this process (reporting the first model's classification probability and 
 \end{enumerate}
 \end{problem}
  \let\cleardoublepage\clearpage
+\pagebreak
+ \textbf{Problem 1 Solution:}\\
+ \begin{enumerate}
+     \item Solution included in my code file \\
+     \item\\
+     Here are my three graphs:\\
+     \includegraphics[scale=0.4]{hw2/images/q1_basis1.png}
+     \includegraphics[scale=0.4]{hw2/images/q1_basis2.png}\\
+     \begin{center}
+         \includegraphics[scale=0.4]{hw2/images/q1_basis3.png}\\
+     \end{center}
+     From these three plots we can see a general trend that as the polynomial degree of the function increases (as we increase the basis from 1 to 3), the variance of our model increases and the bias decreases. We can see that in the plot for basis 1, our model does not fit the ground truth model very well as it is clearly underfitting the data (a sign of high bias). Furthermore, we can see a low variance because all of the individual models seem pretty similar. On the other hand, the plot for basis 3 seems to be overfitting the data which indicates there is a lower bias and each of the individual models seems very different which is an indication of a high variance. Overall, it seems as though basis 1 does not approximate the true process well, bases 2 begins to approximate the process, and basis 3 does the best job. \\
+     
+     \item
+     Pasted below are 3 plots that display the output when we train our model on 2 datasets of size $N=150$. \\
+     \includegraphics[scale = 0.25]{hw2/images/1.3_basis1.png}
+     \includegraphics[scale = 0.25]{hw2/images/1.3_basis2.png}
+     \includegraphics[scale = 0.25]{hw2/images/1.3_basis3.png}\\
+     As we can see, if we were to increase the size of each data set then our variance decreases. This is the case because if we have a much larger data set, then a few noisy points would have less of an impact on our model (if we only have a few points then we take into account the noise from each point a lot more) so we would overfit the data less. This is true for all of our bases; however, we know that the less complex bases (basis 1) will have the smallest decrease in variance because it is such a simple model and already has a low variance. Additionally, because it is such a simple model, the bias will basically stay the same because even with more data points it could not fit to the data well enough. Similarly, basis 2 would have a decrease in variance but the bias would most likely stay the same or maybe increase a tiny bit. Basis 3 will feel the decrease in variance the most because it is the most complex of the models and the bias would also most likely stay the same or slightly increase.\\ 
+     \item
+     \textbf{Test point $t=0.1$:}\\
+     Predicted probability of observation of first model = $0.5198107803372445$\\
+     \\
+     We can interpret this probability as a measure of our uncertainty about the classification of our data. This probability is not equal to 1 or 0 which indicates we are not positive that it should be classified as class 1 or class 2. This probability is really close to $0.5$ which means we are pretty uncertain about the class.\\
+     \\
+     Variance = $0.0033896231687377586$\\
+     This measurement captures another source of uncertainty because it indicates that each of our models may have a different predicted probability of observation for this test data point. This variance is telling us how much our models differ in their predictions - so if they differ more then we are more uncertain. A high variance indicates a high level of uncertainty.\\
+     \\ 
+    \textbf{Test point $t=3.2$:}\\
+    Predicted probability of observation of first model = $0.9999999998523916$\\
+    Variance = $0.23282232401975583$\\
+    \\
+    Even though the predicted probability of observation is a lot more clearly pointing to a particular class at $t=3.2$, I would be more confident detecting my planet at $t=0.1$ because the variance is so so much smaller than the variance at time $t=3.2$. This drastic difference indicates that the models differ significantly more at $t=3.2$ which is why I would be less confident then.\\
+
+     
+ \end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 2
@@ -201,6 +236,67 @@ In addition, let $y_{nk}$ denote the $k$-th component of the output vector $\bol
     We can use this final expression to optimize the weights via gradient descent!
 \end{enumerate}
 \end{framed}
+\pagebreak
+\textbf{Problem 2 Solution:}\\
+\begin{enumerate}
+    \item 
+    In order to better visualize the softmax function I will rewrite it as:\\
+    $$
+    \text{softmax}_k(\boldz) = \frac{\exp(z_k)}{\sum_{i = 1}^K \exp(z_i)} = \frac{e^{z_k}}{e^{z_0} + e^{z_1} + ... + e^{z_K}}
+    $$\\
+    Next, to show that the partial derivatives of the softmax function can be written in terms of the softmax function itself, I will break it into cases:\\
+    \\
+    \underline{Case 1:} $j=k$\\
+    Here we can take the derivative:\\
+    $$
+    \frac{\partial s_k(\boldz)}{\partial z_j} = \frac{\sum_{i=1}^Ke^{z_i}\cdot e^{z_j} - e^{z_j}\cdot e^{z_j}}{(\sum_{i=1}^Ke^{z_i})^2} = \frac{e^{z_j}}{\sum_{i=1}^Ke^{z_i}} - \frac{(e^{z_j})^2}{(\sum_{i=1}^Ke^{z_i})^2} = s_k(z) - [s_k(z)]^2
+      $$\\
+    Now we can simplify a little further:\\
+    $$
+    s_k(z) - [s_k(z)]^2 = s_k(z) (1 - s_j(z)) = s_k(z) (\delta_{kj} - s_j(z))
+    $$
+    
+    \underline{Case 2:} $j \neq k$:\\
+    Again we can take the derivative:\\
+    $$
+    \frac{\partial s_k(\boldz)}{\partial z_j} = \frac{0 - (e^{z_j})(e^{z_k})}{(\sum_{i=1}^Ke^{z_i})^2} = -(s_k(z))\cdot(s_j(z)) = s_k(z)(0 - s_j(z)) = s_k(z) (\delta_{kj} - s_j(z))$$\\
+    \\
+    Now we can find the logarithmic derivative of softmax(z). In order to do this we can use the simple chain rule:\\
+    $$\frac{\partial \ln s_k(\boldz)}{\partial z_j} = \frac{1}{s_k(z)}\cdot s_k(z) (\delta_{kj} - s_j(z)) = \boxed{\delta_{kj} - s_j(z)}$$\\
+    
+    \item
+    First we can write out the likelihood of the data set:\\
+    $$\prod_{n=1}^N\prod_{k=1}^Kp(\boldy_n = C_k | \boldx_n, \boldW)^{y_{nk}} = \prod_{n=1}^N\prod_{k=1}^K(s_k(Wx_n))^{y_{nk}}$$\\
+    \\
+    Now we are going to take the log of this equation so our products will turn into sums and we can move the exponent down. This means our final negative log likelihood will be:\\
+    $$\boxed{-\sum_{n=1}^N\sum_{k=1}^Ky_{nk}\log(s_k(Wx_n))}$$\\
+    
+    \item\\
+    First we can generally take the derivative of the negative log likelihood and then consider the cases where $k=j$ and $k\neq j$ in order to simplify further.\\
+    In part b we showed that the negative log likelihood is:\\
+    $$-\sum_{n=1}^N\sum_{k=1}^Ky_{nk}\log(s_k(Wx_n)) = -\sum_{n=1}^N\sum_{k=1}^Ky_{nk}\log(s_k(z_n))$$\\
+    Now let's take the derivative:\\
+    $$\frac{\partial \ell}{\partial z_{ij}} = -\sum_{n=1}^N\sum_{k=1}^Ky_{nk}\frac{\partial s_k(z_n)}{\partial z_{ij}}\cdot \frac{1}{s_k(z_n)}$$
+    Now, it is important to note that we can actually remove this outer sum over $N$ because $s_k(z_n)$ depends on what $n$ is equal to but because we are taking the derivative with respect to $z_{ij}$, whenever $n\neq i$, the derivative will be equal to 0. As a result, when we take the derivative of the sum the only term that will not be 0 will be when $n=i$. \\
+    $$-\sum_{k=1}^Ky_{nk}\frac{\partial s_k(z_i)}{\partial z_{ij}}\cdot \frac{1}{s_k(z_i)} = -\sum_{k=1}^Ky_{ik}(\delta_{kj} - s_j(z_i))=  \sum_{k=1}^Ky_{ik}(s_j(z_i) - \delta_{kj})$$\\
+    Now to simplify further, let's consider the case where $k=j$. We know that in this case $\delta_{kj} = 1$ so this term in our sum will be equal to:
+    $$y_{ik}\cdot s_j(z_i) - y_{ij}$$\\
+    However, when $k\neq j$, each term will be equal to:\\
+    $$y_{ik}\cdot s_j(z_i)$$\\
+    Now we can put this together and consider the definition of $y_{ik}$ in order to simplify. We know that the definition of one-hot encoding states that only one entry in the vector is set to 1 and the rest are 0's. This means all of our $y_{ik}$'s are equal to 0 except for 1 of them. As a result we only keep one of the $y_{ik}\cdot s_j(z_i) = (1)\cdot s_j(z_i)$ terms. Which overall tells us that the derivative is:\\
+    $$\boxed{\frac{\partial \ell}{\partial z_{ij}} = s_j(z_i)-y_{ij}}$$\\
+    
+    \item First let's rewrite the initial equation:\\
+    $$
+    \frac{\partial \ell}{\partial \boldw_j} = \sum_{n = 1}^N\sum_{k = 1}^K\frac{\partial \ell}{\partial z_{nk}}\frac{\partial z_{nk}}{\partial \boldw_j} = \sum_{n = 1}^N\sum_{k = 1}^K(s_j(z_n)-y_{nk})\frac{\partial z_{nk}}{\partial \boldw_j}
+    $$\\
+    Let's break apart the second part of the derivative. We know that when $k=j$: $$\frac{\partial z_{nk}}{\partial \boldw_j} = \frac{\partial w_kx_n}{\partial \boldw_j} = \frac{\partial w_jx_n}{\partial \boldw_j} = x_n$$\\
+    However, when $k\neq j$ this derivative is just equal to 0. \\
+    This means each term where $j\neq k$ is equal to 0. As a result, we can remove our inner sum over $K$:\\
+    $$\frac{\partial \ell}{\partial \boldw_j} = \sum_{n = 1}^N(s_j(z_n)-y_{nj})x_n =\boxed{ \sum_{n = 1}^N(s_j(\boldW\boldx_n) - y_{nj})\boldx_n}$$
+    
+    
+\end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 3
@@ -247,6 +343,30 @@ After implementing the above classifiers, complete the following exercises:
     Interpret how each model makes its classification decision. What are the pros and cons of each interpretation? What else should we, the modelers, be aware of when making predictions on a test point ``far" from our training data? \textbf{Your response should no be longer than 5 sentences.}
 \end{enumerate}
 \end{problem}
+\pagebreak
+\textbf{Problem 3 Solution:}\\
+\begin{enumerate}
+    \item Softmax Regressions:\\
+     \includegraphics[scale=0.4]{hw2/images/softmax_regression.png}
+     \includegraphics[scale=0.4]{hw2/images/basis_regression.png}\\
+     KNN Regressions:\\
+     \includegraphics[scale=0.4]{hw2/images/knn1_regression.png}
+     \includegraphics[scale=0.4]{hw2/images/knn5_regression.png}\\
+     \\
+     Looking at all of these graphs we can clearly see that each type of regression uses a different decision boundary. The standard softmax regression uses all linear decision boundaries because the data has not been transformed. From the plot, we can see that because of the linear boundaries, we cannot capture every point exactly, but overall the regression does a very good job classifying the stars. The softmax regression with the feature map (basis regression) uses quadratic looking decision boundaries. This is a result of the log and quadratic data transformation we used. There is no longer a linear term which is why the boundaries cannot be linear. This regression does not do nearly as good of a job classifying the data as in the standard softmax regression. Lastly, both of the KNN regressions have varying decision boundaries because all of the classifications are made from the points around them. Becauase of the flexibility in shape of the decision boundaries, they both do a good job of classifying the data. Furthermore we can see that when $k=1$ we are moving the boundary for every point - a clear sign of overfitting. \\
+     \item
+     I wrote some code which will identify which class each model predicts:\\
+     \\
+     \textbf{Softmax model:} predicts \textbf{Class 0} with probabilities: \\$[1.00000000e+00, 1.31778926e-28, 2.56768493e-40]$\\
+     \\
+     \textbf{Basis model:} predicts \textbf{Class 1} with probabilities:\\ $[0.03425432, 0.96455651, 0.00118917]$\\
+     \\
+     \textbf{KNN $k=1$ model:} predicts \textbf{Class 0}\\
+     \textbf{KNN $k=5$ model:} predicts \textbf{Class 0}\\
+     \\
+     Both of the softmax models (the Softmax model and the Basis model) make their classification decisions based on classification probabilities meaning they see which class has the highest probability and assign that class overall. The KNN models, on the other hand, make their classification decisions based on the classification of the $k$ nearest training points - they choose whichever class is most common amongst its $k$ nearest neighbors, and, as a result, it does not use classification probabilities. The pros of the KNN models (and cons of the softmax models) are that the classification boundaries do not need to be as strict (ie they do not need to all be linear or quadratic) which can be beneficial. The cons, on the other hand, are that the choice of $k$ is very important (a bad choice can make our model either overfit or undefit), and KNN does not report classification probabilities so we are not able to clearly see the model's confidence in its predictions. \\
+     In general, when making predictions on a test point "far" from our training data we should be aware that this point is farther away so the classification might be less accurate. This is particularly true for KNN models because we are classifying based on the points around so if the training point is not near other points then the classification of other points might not be helpful.
+\end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 4
@@ -307,18 +427,50 @@ Since testing on a larger patient population is expensive for various reasons, t
 \end{framed}
 
 \newpage
+\textbf{Problem 4 Solution:}\\
+\begin{enumerate}
+    \item If the patient is administered the drug:\\
+    $$p(y=1 | \mathbf{x}) = \sigma(0.2 + 0.8 - 0.012*50 +   0.001\cdot168 - 0.007\cdot140) = \sigma(-0.412) = 0.3984327$$
+    If the patient is not administered the drug:\\
+    $$p(y=1 | \mathbf{x}) = \sigma(0.2 - 0.012*50 +   0.001\cdot168 - 0.007\cdot140) = \sigma(-1.212) = 0.229347$$\\
+    These results tell us that the change in probability that the patient is cured is $0.3984327 - 0.229347 = 0.1690857$. This change is not that substantial and in both cases it seems as though the patient would most likely not survive. Interestingly, however, the value of $w_1$ is $0.8$ which seems high especially when we compare it to the other coefficients. As a result, one might assume the coefficient has a large impact but in this case it doesn't seem to. Furthermore, we know that this small impact of the $w_1$ coefficient is a result of the behavior of the sigmoid function. The impact of the $0.8$ is very dependent on the other covariates. For example, if the patient had other factors that were very positively impacting her rate of survival then the drug might have had more of an impact. This means that in the worst case the drug has an impact of around $15\%$ and in the best case it has an impact of around $20\%$. \\
+    As a result, in terms of evaluating the efficacy of their drug, I would say that this model definitely shows a correlation between a patient receiving a drug and the patient's rate of survival increasing, but we do not have enough evidence and the impact does not seem big enough to be able to determine if it is causal. \\
+    \item
+    \begin{enumerate}
+        \item We might see this reduction in uncertainty in model B because we are making our model more complex so that it can fit the data better. Specifically, by adding these new interaction terms we are decreasing the bias of the model. This is very important because the model may no longer underfit the data quite as much. In addition, the variance is staying about the same which is why we see such an improvement - we are decreasing the bias without increasing the variance.
+        \item In model C, we are increasing the complexity of our model too much which could be leading to overfitting. In model B we managed to decrease our bias without drastically increasing our variance which is why we saw a reduction in uncertainty - we were managing the bias / variance tradeoff well. However, in model C, as we get too complex our variance will substantially increase and our bias will decrease so we are not managing the tradeoff well. This is why our level of uncertainty rises.
+        One way to reduce this comparatively large uncertainty while keeping all the new terms is to use Regularization - we can add either an L1 or L2 regularization term to our loss function in order to keep the coefficients low and decrease our variance.
+        \item 
+        I would recommend model B to the drug company because it is easier to interpret than model C. When we add too many terms to our model and make it too complex, it is difficult to understand exactly how each covariate is affecting the model. As a result, we will have more difficulty evaluating the model and extracting insights about the model. This is particularly important in a medical context. Just because a model predicts good outcomes for a drug, we should be sure we understand exactly why this is happening and other things that could impact survival before prescribing a drug that could potentially have many harmful effects. \\
+    \end{enumerate}
+    \item
+    \begin{enumerate}
+        \item I would not recommend this drug to the patient. This confidence interval is saying that within our $95\%$ confidence interval, there is a chance that the drug could actually have a negative affect on the patient. This means that the drug could actually make the critically ill patient sicker. As a result, especially if the drug is very expensive, I would not recommend that the patient test it out.
+        \item If the drug company wants to tighten the confidence interval of $w_1$ then they can add more patients to their clinical trial. By increasing the number of patients they are increasing the data set size which decrease the variance in our model (as explained in question 1.3). With less variance, the drug company will be able to tighten the confidence interval of $w_1$ because there will be a smaller range of values that $w_1$ could take on. 
+        \item It is more costly to run the drug trial to demonstrate the effectiveness of the drug when $w_1=1$. If we want to show that the drug is effective it cannot have a negative impact on the patient which means the value of $w_1$ cannot be negative. As a result, if $w_1=1$, the confidence interval must be much tighter because 1 is a lot smaller than 5 (it is closer to negative numbers).
+        \item It would not be a good idea to fix the parameter $w_1$ because the aim of our model is to test whether or not the drug is effective. $w_1$ is the parameter that indicates the effectiveness so if we fix it then we would not know if the drug is effective. However, this domain knowledge can still be very beneficial because we can compare the values of $w_1$ generated by our model to their values as a sanity check. This might help us identify if our model is completely off base, or it might be the case that this domain knowledge is innacurate. \\
+    \end{enumerate}
+    \item 
+    I would trust model B trained on the second data set rather than the first data set to predict the probability that this new random patient is cured when given the drug because the second data set is a randomly selected data set. In the first recruitment protocol, the patients themselves are able to choose whether or not they want to be in the trial. As a result, there could be several other factors amongst this group of people that impact the results of the trial. For example, patients that are more concerned about their health and will put more effort into taking care of themselves might be more willing to take the drug. As a result, the data could be skewed so that the people that opt in will have better outcomes. This is reflected in the model because $w_1$ is high for the first data set and much smaller for the second data set. The first data set seems to indicate that the drug is more effective but this could just be a result of the specific patients that decided to opt in. In this case, the willingness of patients to put in money / time to take care of themselves is a confounding factor in the first data set. However, in the second data set, because the patients are chosen randomly, this is no longer a confounding factor.   
+    
+    
+    % the patients that are sicker and might have a worse case of the disease would be more likely to accept the drug because they are more desperate for a cure. Or, on the other hand, the people that want to invest more in their health might be more likely to Because the health of these patients are worse, they are more likely to die than the patients who have a milder version of disease which would mean the data could be skewed to indicate that the drug is not effective. This is proven when we learn that training model B on the first dataset yields a high value of $w_1$ and training it on the second dataset yields a smaller value for $w_1$. The first dataset seems to indicate that the drug is less effective but this could just be a result of the patients being sicker. In this case, the patient's health / level of severity of their disease is a confounding factor in the first data set. However, in the second data set, because the patients are chosen randomly, this is no longer a confounding factor.
 
+
+\end{enumerate}
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Name and Calibration
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Name}
+\subsection*{Name} Kara Siegel
 
 \subsection*{Collaborators and Resources}
-Whom did you work with, and did you use any resources beyond cs181-textbook and your notes?
+\textbf{Whom did you work with, and did you use any resources beyond cs181-textbook and your notes?}\\
+Noah Covey, Natalie Melas-Kyriazi
 
 \subsection*{Calibration}
-Approximately how long did this homework take you to complete (in hours)?
+\textbf{Approximately how long did this homework take you to complete (in hours)?}\\
+25 hours
 
 
 
